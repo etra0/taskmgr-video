@@ -1,5 +1,7 @@
 # Play a video in the Task Manager
 
+![](https://raw.githubusercontent.com/etra0/taskmgr-video/master/shrek.gif)
+
 This is a dummy project I did to improve my understanding in Reverse Engineering.
 
 ## Usage
