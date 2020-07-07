@@ -20,7 +20,7 @@ Then, you need to run the Python script to generate the out.txt. The included
 one is the Shrek movie.
 
 Finally, edit the `dll/src/lib.rs` and change PATH to the full path of your `out.txt`, then open a powershell in admin, `cd` into the dir
-then run
+and run
 ```
 cargo.exe build
 cargo.exe run Taskmgr.exe "cargo.exe run Taskmgr.exe "<Full Path to output DLL>"
