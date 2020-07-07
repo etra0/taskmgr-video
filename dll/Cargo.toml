@@ -3,7 +3,6 @@ name = "dll"
 version = "0.1.0"
 authors = ["Sebastian"]
 edition = "2018"
-build = "build.rs"
 
 [lib]
 crate-type = ["cdylib"]
