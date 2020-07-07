@@ -21,12 +21,12 @@ one is the Shrek movie.
 
 Finally, edit the `dll/src/lib.rs` and change PATH to the full path of your `out.txt`, then open a powershell in admin, `cd` into the dir
 and run
-```
+```bash
 cargo.exe build
-cargo.exe run Taskmgr.exe "cargo.exe run Taskmgr.exe "<Full Path to output DLL>"
+cargo.exe run Taskmgr.exe "Full Path to output DLL>"
 ```
 
 for example
-```
+```bash
 cargo.exe run Taskmgr.exe "C:\Users\MyUser\taskmanager\target\debug\dll.dll"
 ```
