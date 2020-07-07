@@ -13,7 +13,7 @@ use winapi::um::processthreadsapi::CreateRemoteThread;
 use winapi::um::winbase::FormatMessageA;
 use winapi::um::winnt::{MEM_COMMIT, PAGE_READWRITE};
 
-pub unsafe fn inject_dll(process: &Process, name: &str) {
+pub fn inject_dll(process: &Process, name: &str) {
     let dll_dir = CString::new(name).unwrap();
     let dll_dir_s = dll_dir.as_bytes_with_nul().len();
 
@@ -83,5 +83,5 @@ fn main() {
     let dll_name = args.get(2).unwrap();
     let process = Process::new(&p_name).unwrap();
 
-    unsafe { inject_dll(&process, &dll_name) };
+    inject_dll(&process, &dll_name);
 }
