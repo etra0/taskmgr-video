@@ -6,7 +6,7 @@ This is a dummy project I did to improve my understanding in Reverse Engineering
 
 ## Usage
 
-You need Rust, Python and `ffmpeg` with `numpy` and `pillows`.
+You need Rust, Python with `numpy` and `pillows` and `ffmpeg` .
 
 Create a folder called `assets` then `assets/frames`, then use ffmpeg
 to create the images from a video (it is recommended to use fewer frames
@@ -28,5 +28,5 @@ cargo.exe run Taskmgr.exe "cargo.exe run Taskmgr.exe "<Full Path to output DLL>"
 
 for example
 ```
-cargo.exe run Taskmgr.exe "cargo.exe run Taskmgr.exe C:\Users\MyUser\taskmanager\target\debug\dll.dll"
+cargo.exe run Taskmgr.exe "C:\Users\MyUser\taskmanager\target\debug\dll.dll"
 ```
