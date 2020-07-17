@@ -12,7 +12,6 @@ const PATH: &'static str = "FULL_PATH_TO_TXT";
 // nasty globals
 static mut TASKMGR: usize = 0;
 // Thanks to the user @fourtyseven for the heads up of this two functions.
-static mut GETBLOCKCOLOUR_OFFSET: usize = 0xaacbc;
 static mut SETBLOCKDATA_OFFSET: usize = 0xab614;
 static mut INDEX: usize = 0;
 static mut IMG: Vec<Vec<u32>> = Vec::new();
@@ -84,13 +83,9 @@ fn parse_arr() -> Vec<Vec<u32>> {
 #[no_mangle]
 #[allow(non_snake_case)]
 extern "system" fn update_func(handle: LPVOID) -> DWORD {
-    let mut v10: u32 = 0;
-    let mut v11: u32 = 0;
+    let v10: u32 = 0;
     let w: [u16; 5] = unsafe { std::mem::zeroed() };
 
-    let GetBlockColours = unsafe {
-        gen_func!(TASKMGR + GETBLOCKCOLOUR_OFFSET, "system", [LPVOID, u32, *mut u32, *mut u32])
-    };
     let SetBlockData = unsafe {
         gen_func!(
             TASKMGR + SETBLOCKDATA_OFFSET,
@@ -101,9 +96,8 @@ extern "system" fn update_func(handle: LPVOID) -> DWORD {
 
     // let img = parse_arr();
     for i in 1..1024 {
-        (GetBlockColours)(handle, 0, &mut v10, &mut v11);
-        v11 = unsafe { IMG[i][INDEX] };
-        (SetBlockData)(handle, i as u32, &w, v11, v10);
+        let color = unsafe { IMG[i][INDEX] };
+        (SetBlockData)(handle, i as u32, &w, color, v10);
     }
 
     unsafe {
