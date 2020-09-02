@@ -44,20 +44,12 @@ fn hook_fun(dest: usize, f: *const u8, len: usize) {
         );
     }
 
-    let mut ptr = dest as *mut u8;
-    // far jmp
+    let mut data: Vec<u8> = vec![0x48, 0xB8];
+    data.extend_from_slice(&(f as usize).to_le_bytes());
+    data.push(0xFF);
+    data.push(0xE0);
     unsafe {
-        // mov eax,
-        *ptr = 0x48;
-        ptr = (dest + 1) as *mut u8;
-        *ptr = 0xB8;
-
-        // val
-        let ptr = (dest + 2) as *mut usize;
-        *ptr = f as usize;
-
-        let ptr = (dest + 10) as *mut u16;
-        *ptr = 0xE0FF;
+        std::ptr::copy_nonoverlapping(data.as_ptr(), dest as *mut u8, data.len());
     }
 }
 
