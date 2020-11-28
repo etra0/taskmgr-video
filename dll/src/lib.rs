@@ -3,11 +3,13 @@ use std::ptr;
 use winapi;
 use winapi::shared::minwindef::{BOOL, DWORD, HINSTANCE, LPVOID};
 use winapi::um::consoleapi::AllocConsole;
+use memory_rs::internal::*;
+use memory_rs::internal::injections::*;
 
 const GLOBAL_SETTINGS: usize = 0xFB550;
 const GLOBAL_SETTINGS_CPU_OFFSET: usize = 0x944;
 
-const PATH: &'static str = "FULL_PATH_TO_TXT";
+const PATH: &'static str = r"C:\Users\Sebastian\Documents\work\rust\taskmanager\out.txt";
 
 // nasty globals
 static mut TASKMGR: usize = 0;
@@ -31,27 +33,6 @@ macro_rules! gen_func {
     };
 }
 
-// Hook a function using jmp far (very nasty)
-fn hook_fun(dest: usize, f: *const u8, len: usize) {
-    let mut _t: DWORD = 0;
-
-    unsafe {
-        winapi::um::memoryapi::VirtualProtect(
-            dest as LPVOID,
-            len,
-            winapi::um::winnt::PAGE_EXECUTE_READWRITE,
-            &mut _t,
-        );
-    }
-
-    let mut data: Vec<u8> = vec![0x48, 0xB8];
-    data.extend_from_slice(&(f as usize).to_le_bytes());
-    data.push(0xFF);
-    data.push(0xE0);
-    unsafe {
-        std::ptr::copy_nonoverlapping(data.as_ptr(), dest as *mut u8, data.len());
-    }
-}
 
 fn parse_arr() -> Vec<Vec<u32>> {
     use std::fs;
@@ -86,7 +67,6 @@ extern "system" fn update_func(handle: LPVOID) -> DWORD {
         )
     };
 
-    // let img = parse_arr();
     for i in 1..1024 {
         let color = unsafe { IMG[i][INDEX] };
         (SetBlockData)(handle, i as u32, &w, color, v10);
@@ -103,43 +83,25 @@ extern "system" fn update_func(handle: LPVOID) -> DWORD {
 pub unsafe extern "system" fn intercept_input(_: LPVOID) -> DWORD {
     use winapi::um;
 
-    let _name = CString::new("Taskmgr.exe").unwrap();
-    let taskmgr = um::libloaderapi::GetModuleHandleA(_name.as_ptr()) as usize;
+    let proc_inf = process_info::ProcessInfo::new(None).unwrap();
 
-    TASKMGR = taskmgr;
+    TASKMGR = proc_inf.addr;
 
-    let pf = update_func;
 
     AllocConsole();
     IMG = parse_arr();
     println!("{}", IMG[0].len());
-    println!("pf {:x}", pf as usize);
-    let p = (taskmgr + GLOBAL_SETTINGS + GLOBAL_SETTINGS_CPU_OFFSET) as *mut u32;
+    println!("{:x?}", proc_inf);
+    let p = (proc_inf.addr + GLOBAL_SETTINGS + GLOBAL_SETTINGS_CPU_OFFSET) as *mut u32;
     *p = 1024;
 
-    hook_fun(taskmgr + 0xab738, pf as *const u8, 5);
+    let mut detour = injections::Detour::new(proc_inf.addr + 0xAB738, 14, update_func as usize, None);
+
+    detour.inject();
+
+    loop {}
 
     return 1;
 }
 
-#[no_mangle]
-#[allow(non_snake_case)]
-pub extern "system" fn DllMain(_: HINSTANCE, reason: DWORD, _: LPVOID) -> BOOL {
-    unsafe {
-        match reason {
-            winapi::um::winnt::DLL_PROCESS_ATTACH => {
-                winapi::um::processthreadsapi::CreateThread(
-                    ptr::null_mut(),
-                    0,
-                    Some(intercept_input),
-                    ptr::null_mut(),
-                    0,
-                    ptr::null_mut(),
-                );
-            }
-            _ => (),
-        };
-    }
-
-    return true as BOOL;
-}
+memory_rs::main_dll!(intercept_input);

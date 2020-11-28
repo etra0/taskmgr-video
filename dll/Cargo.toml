@@ -1,5 +1,5 @@
 [package]
-name = "dll"
+name = "cpu_hijack"
 version = "0.1.0"
 authors = ["Sebastian"]
 edition = "2018"
@@ -9,6 +9,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 winapi = { version = "0.3", features = ["winuser", "consoleapi", "synchapi", "xinput", "impl-default"] }
+memory-rs = { git = "https://github.com/etra0/memory-rs" }
 
 [build-dependencies]
 cc = "1.0"
