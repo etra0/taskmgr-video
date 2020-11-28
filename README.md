@@ -18,16 +18,10 @@ ffmpeg -i input_video.mp4 assets/frames/%06d.png
 ```
 
 Then, you need to run the Python script to generate the out.txt. The included
-one is the Shrek movie.
+one is the Shrek movie. **out.txt must be in the root folder of the project**
 
-Finally, edit the `dll/src/lib.rs` and change PATH to the full path of your `out.txt`, then open a powershell in admin, `cd` into the dir
+Finally, open a powershell in admin, `cd` into the dir
 and run
 ```bash
-cargo.exe build
-cargo.exe run Taskmgr.exe "Full Path to output DLL>"
-```
-
-for example
-```bash
-cargo.exe run Taskmgr.exe "C:\Users\MyUser\taskmanager\target\debug\dll.dll"
+cargo.exe r
 ```

@@ -9,7 +9,7 @@ use memory_rs::internal::injections::*;
 const GLOBAL_SETTINGS: usize = 0xFB550;
 const GLOBAL_SETTINGS_CPU_OFFSET: usize = 0x944;
 
-const PATH: &'static str = r"C:\Users\Sebastian\Documents\work\rust\taskmanager\out.txt";
+const PATH: &'static str = concat!(env!("CARGO_MANIFEST_DIR"), r"\..\out.txt");
 
 // nasty globals
 static mut TASKMGR: usize = 0;
@@ -92,6 +92,7 @@ pub unsafe extern "system" fn intercept_input(_: LPVOID) -> DWORD {
     IMG = parse_arr();
     println!("{}", IMG[0].len());
     println!("{:x?}", proc_inf);
+    println!("Path: {}", PATH);
     let p = (proc_inf.addr + GLOBAL_SETTINGS + GLOBAL_SETTINGS_CPU_OFFSET) as *mut u32;
     *p = 1024;
 
